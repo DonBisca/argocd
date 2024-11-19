@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: selenium
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: [repo git url]
+    path: SeleniumWebDriver/selenium
+    targetRevision: pro-v3-pruebas
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: selenium
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - Replace=true
+      - CreateNamespace=true
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: git-credentials-project-devops
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repo-creds
+stringData:
+  url: [group-git url]
+  type: git
+  username: [username]
+  password: [pass]
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jenkinsha
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: jenkinsha
+  type: git
+  url: [repo git url]

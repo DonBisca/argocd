@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jenkins
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:  
+  project: default
+  source:
+    repoURL: '[repo url]'
+    path: 'NFSV6/helm/jenkins_copy'
+    targetRevision: pro-v3-pruebas
+    helm:
+      valueFiles:
+        - values-cal.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: jenkinspruebas
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - Replace=true
+      - CreateNamespace=true

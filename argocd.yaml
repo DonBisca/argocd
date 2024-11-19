@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-cd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: [repo url]
+    path: argocd/argocd-chart/argocd
+    targetRevision: pro-v3-pruebas
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      selfHeal: true
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: git-credentials-project-devops
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repo-creds
+stringData:
+  url: [repo group url]
+  type: helm
+  username: [username]
+  password: [token]
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jenkins-ha
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: jenkins-ha
+  type: git
+  url: [repo url]
+  
